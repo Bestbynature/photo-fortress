@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Photo Fortress Image Upload</title>
+  </head>
+  <body>
+    <h1>Photo Fortress Image Upload</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input id="file" type="file" name="imagefile" accept="image/*" required />
+      <button type="submit">Upload Image</button>
+    </form>
+    <div id="message"></div>
+    <h2>Uploaded Images</h2>
+    <div id="uploadedImages"></div>
+    <h2>Image IDs</h2>
+    <table id="imageIdsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+            </tr>
+        </thead>
+        <tbody id="imageIdsBody"></tbody>
+    </table>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      input[type="file"] {
+        margin-right: 10px;
+      }
+
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      #message {
+        margin-bottom: 20px;
+        color: #dc3545;
+      }
+
+      #uploadedImages {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      #uploadedImages img {
+        width: 200px;
+        height: 200px;
+        margin: 10px;
+        object-fit: cover;
+      }
+    </style>
+
+    <script>
+      const uploadForm = document.getElementById("uploadForm");
+      const messageDiv = document.getElementById("message");
+      const uploadedImagesDiv = document.getElementById("uploadedImages");
+
+      uploadForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        messageDiv.textContent = "";
+
+        const file = document.getElementById("file");
+
+        // console.log(file.files[0])
+        const formData = new FormData();
+
+        formData.append("imagefile", file.files[0]);
+
+        try {
+          const response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+
+          const data = await response.json();
+          console.log(data)
+          if (response.ok) {
+            messageDiv.textContent = data.message;
+
+            messageDiv.textContent += data.imageId
+
+            // fetchImageIds();
+
+          } else {
+            throw new Error(data.error);
+          }
+        } catch (error) {
+          messageDiv.textContent = error.message;
+        }
+      });
+
+//       async function fetchImageIds() {
+//     try {
+//         const response = await fetch("/api/image_ids");
+//         const data = await response.json();
+//         if (response.ok) {
+//             renderImageIds(data.imageIds);
+//         } else {
+//             throw new Error(data.error);
+//         }
+//     } catch (error) {
+//         // Check if response headers have already been sent
+//         if (!res.headersSent) {
+//             // Send error response only if headers have not been sent
+//             messageDiv.textContent = error.message;
+//         }
+//     }
+// }
+//         function renderImageIds(imageIds) {
+//             imageIdsTableBody.innerHTML = "";
+//             imageIds.forEach((id) => {
+//                 const row = document.createElement("tr");
+//                 const cell = document.createElement("td");
+//                 cell.textContent = id;
+//                 row.appendChild(cell);
+//                 imageIdsTableBody.appendChild(row);
+//             });
+//         }
+
+//         // Fetch image IDs when the page loads
+//         fetchImageIds();
+
+      // const displayUploadedImages = async () => {
+      //   uploadedImagesDiv.innerHTML = "";
+
+      //   try {
+      //     const response = await fetch("/api/get_image");
+      //     const data = await response.json();
+
+      //     if (response.ok) {
+      //       if (data.imageUrl) {
+      //         const img = document.createElement("img");
+      //         img.src = data.imageUrl;
+      //         uploadedImagesDiv.appendChild(img);
+      //       } else {
+      //         uploadedImagesDiv.textContent = "No images found";
+      //       }
+      //     } else {
+      //       throw new Error(data.error);
+      //     }
+      //   } catch (error) {
+      //     messageDiv.textContent = error.message;
+      //   }
+      // };
+
+      // displayUploadedImages();
+    </script>
+  </body>
+</html>
