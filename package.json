@@ -1,0 +1,44 @@
+{
+  "name": "photo_fortress",
+  "version": "1.0.0",
+  "description": "Image Upload and Get Api Endpoint",
+  "main": "server.js",
+  "scripts": {
+    "start": "ts-node app.ts",
+    "dev": "nodemon --exec ts-node app.ts",
+    "test": "\"mocha --timeout 5000 --require @babel/register --recursive --exit --ui tdd tests/\""
+  },
+  "dependencies": {
+    "@types/express": "^4.17.21",
+    "@types/mongoose": "^5.11.97",
+    "@types/multer": "^1.4.11",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bestbynature/photo-fortress.git"
+  },
+  "keywords": [
+    "image",
+    "fortress",
+    "upload",
+    "get"
+  ],
+  "author": "Damilare",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bestbynature/photo-fortress/issues"
+  },
+  "homepage": "https://github.com/Bestbynature/photo-fortress#readme",
+  "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.4.0",
+    "sinon": "^17.0.1"
+  }
+}
