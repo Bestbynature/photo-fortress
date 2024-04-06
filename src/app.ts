@@ -28,3 +28,5 @@ app.get("/", async (req, res) => {
 });
 
 app.use("/api", imageRoutes);
+
+export default app;
