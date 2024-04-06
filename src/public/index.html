@@ -31,6 +31,8 @@
             <button type="submit">Get all Ids from the database</button>
           </form>
 
+          <p class="fetch-ids-message"></p>
+
           <table id="imageIdsTable">
             <thead>
               <tr id="table-head"></tr>
@@ -49,7 +51,7 @@
             />
             <button type="submit">Display Image</button>
           </form>
-          <p class="fetch-message"></p>
+          <p class="fetch-image-message"></p>
           <br />
           <div id="uploadedImages"></div>
           <p class="secure-url"></p>
@@ -219,10 +221,33 @@
       const displayImageForm = document.getElementById("display-image");
       const imageIdsTable = document.getElementById("imageIdsTable");
       const secureUlr = document.querySelector(".secure-url");
-      const fetchMessage = document.querySelector(".fetch-message");
+      const fetchMessage = document.querySelector(".fetch-image-message");
+      const fetchIdsMessage = document.querySelector(".fetch-ids-message");
+
+      const clearErrorMessage = () => {
+        messageDiv.textContent = "";
+        messageDiv.classList.remove("error");
+        messageDiv.classList.remove("success");
+
+        fetchMessage.textContent = "";
+        fetchMessage.classList.remove("error");
+        fetchMessage.classList.remove("success");
+
+        fetchIdsMessage.textContent = "";
+        fetchIdsMessage.classList.remove("error");
+        fetchIdsMessage.classList.remove("success");
+      };
+
+      // Display error message
+      const displayErrorMessage = (errorMessage) => {
+        const messageDiv = document.getElementById("message");
+        messageDiv.textContent = errorMessage;
+        messageDiv.classList.add("error");
+      };
 
       displayImageForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+        clearErrorMessage();
         fetchMessage.textContent = "Fetching your image... Please wait...";
         const imageId = displayImageForm.querySelector("input").value;
         const imageUrl = `/api/get_image/${imageId}`;
@@ -251,6 +276,8 @@
 
       getIdButton.addEventListener("submit", async (e) => {
         e.preventDefault();
+        clearErrorMessage();
+        fetchIdsMessage.textContent = "Fetching all image ids... Please wait...";
         imageIdsBody.innerHTML = "";
 
         try {
@@ -259,6 +286,8 @@
 
           if (response.ok) {
             imageIdsTable.style.display = "block";
+            fetchIdsMessage.textContent = "Image ids fetched successfully!";
+            fetchIdsMessage.classList.add("success");
             tableHead.innerHTML = "<th>Serial Number</th><th>Image ID</th>";
             data.imageIds.forEach((id, index) => {
               const row = document.createElement("tr");
@@ -279,15 +308,23 @@
           }
         } catch (error) {
           console.log(error);
+          fetchIdsMessage.classList.add("error");
+          fetchIdsMessage.textContent = error.message;
         }
       });
 
       uploadForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+        clearErrorMessage();
+
         messageDiv.textContent = "Uploading your image... Please wait...";
-        messageDiv.classList.remove("error");
 
         const file = document.getElementById("file");
+
+        if (!file.files[0].type.startsWith("image")) {
+          displayErrorMessage("Only image files are allowed");
+          return;
+        }
 
         const formData = new FormData();
 
@@ -309,8 +346,7 @@
             throw new Error(data.error);
           }
         } catch (error) {
-          messageDiv.textContent = error.message;
-          messageDiv.classList.add("error");
+          displayErrorMessage(error.message);
         }
       });
     </script>

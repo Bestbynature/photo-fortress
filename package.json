@@ -4,8 +4,8 @@
   "description": "Image Upload and Get Api Endpoint",
   "main": "server.js",
   "scripts": {
-    "start": "ts-node app.ts",
-    "dev": "nodemon --exec ts-node app.ts",
+    "start": "ts-node src/app.ts",
+    "dev": "nodemon --exec ts-node src/app.ts",
     "test": "\"mocha --timeout 5000 --require @babel/register --recursive --exit --ui tdd tests/\""
   },
   "dependencies": {
