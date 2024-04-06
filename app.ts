@@ -4,18 +4,9 @@ import * as path from "path";
 import * as multer from "multer";
 import "./db-connection";
 import ImageModel, { ImageDocument } from "./model";
-import * as fs from "fs";
 
 const app = express();
 
-
-// const storage = multer.diskStorage({
-//   destination: '/public/uploads',
-//   filename: (req, file, cb) => {
-//     // Set filename as current date/time with original file extension
-//     cb(null, new Date().toISOString() + '-' + file.originalname);
-//   },
-// });
 
 const fileFilter = (req: any, file: any, cb: any) => {
   if (file.mimetype.startsWith('image/')) {
@@ -29,8 +20,6 @@ const memoryStorage = multer.memoryStorage();
 
 const upload = multer({ storage: memoryStorage, fileFilter});
 
-// const upload = multer({ storage, fileFilter});
-
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
@@ -40,15 +29,17 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 // Routes
 app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
-  // try {
-  //   const images = await ImageModel.find({}, '_id');
-  //   const imageIds = images.map(image => image._id);
-  //   res.json({ imageIds });
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).json({ error: "Failed to fetch image IDs" });
-  // }
+app.get("/api/get_images", async (req, res) => {
+  try {
+    const images = await ImageModel.find({}, "_id");
+    const imageIds = images.map((image) => image._id);
+    res.json({ imageIds });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch image IDs" });
+  }
 });
 
 app.get("/api/get_image/:id", async (req, res) => {

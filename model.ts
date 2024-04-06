@@ -1,6 +1,5 @@
 import mongoose, { Document } from 'mongoose';
 
-// Define interface for Image document
 interface ImageDocument extends Document {
   name: string;
   image: {
@@ -20,4 +19,4 @@ const imageSchema = new mongoose.Schema({
 const ImageModel = mongoose.model<ImageDocument>('Image', imageSchema);
 
 export default ImageModel;
-export { ImageDocument }; // Export the interface for reuse
+export { ImageDocument };

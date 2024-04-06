@@ -7,32 +7,75 @@
   </head>
   <body>
     <h1>Photo Fortress Image Upload</h1>
-    <form id="uploadForm" enctype="multipart/form-data">
-      <input id="file" type="file" name="imagefile" accept="image/*" required />
-      <button type="submit">Upload Image</button>
-    </form>
-    <div id="message"></div>
-    <h2>Uploaded Images</h2>
-    <div id="uploadedImages"></div>
-    <h2>Image IDs</h2>
-    <table id="imageIdsTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-            </tr>
-        </thead>
-        <tbody id="imageIdsBody"></tbody>
-    </table>
+    <div class="wrapper">
+      <div class="left">
+        <form id="uploadForm" enctype="multipart/form-data">
+          <input
+            id="file"
+            type="file"
+            name="imagefile"
+            accept="image/*"
+            required
+          />
+          <button type="submit">Upload Image</button>
+        </form>
+
+        <br />
+        <hr />
+        <br />
+
+        <div id="message"></div>
+
+        <div class="get-all-id">
+          <form id="getidbutton">
+            <button type="submit">Get all Ids from the database</button>
+          </form>
+
+          <table id="imageIdsTable">
+            <thead>
+              <tr id="table-head"></tr>
+            </thead>
+            <tbody id="imageIdsBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="right">
+        <div id="displayimage">
+          <form id="display-image">
+            <input
+              type="text"
+              placeholder="copy just one id from the list of all ids"
+              required
+            />
+            <button type="submit">Display Image</button>
+          </form>
+          <p class="fetch-message"></p>
+          <br />
+          <div id="uploadedImages"></div>
+          <p class="secure-url"></p>
+        </div>
+      </div>
+    </div>
 
     <style>
       body {
         font-family: Arial, sans-serif;
         margin: 0;
-        padding: 0;
+        padding: 2em;
+        background: linear-gradient(to right, #f5f7fa, #c3cfe2);
+      }
+
+      .wrapper {
+        display: grid;
+        gap: 3em;
+        grid-template-columns: 1fr 1fr;
+        justify-content: space-between;
+        margin: 20px;
       }
 
       h1 {
         color: #333;
+        text-align: center;
       }
 
       form {
@@ -43,12 +86,19 @@
         margin-right: 10px;
       }
 
+      input[type="text"] {
+        padding: 10px;
+        width: 300px;
+        margin-right: 10px;
+      }
+
       button {
         background-color: #007bff;
         color: #fff;
         border: none;
         padding: 10px 20px;
         cursor: pointer;
+        border-radius: 10px;
       }
 
       button:hover {
@@ -57,12 +107,26 @@
 
       #message {
         margin-bottom: 20px;
-        color: #dc3545;
+      }
+
+      .success {
+        color: green;
+        background-color: lightgreen;
+      }
+
+      .error {
+        color: white;
+        background-color: red;
       }
 
       #uploadedImages {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        border: 3px dashed #007bff;
+        min-height: 40vh;
+        max-height: auto;
       }
 
       #uploadedImages img {
@@ -71,20 +135,160 @@
         margin: 10px;
         object-fit: cover;
       }
+
+      #display-image {
+        padding: 3em;
+        display: flex;
+        justify-content: space-between;
+        border: 2px solid red;
+      }
+
+      #getidbutton {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      #getidbutton button {
+        width: 80%;
+      }
+
+      #imageIdsTable {
+        display: none;
+        width: 100%;
+        border: 2px solid #007bff;
+        margin-top: 20px;
+      }
+
+      tbody tr:nth-child(odd) {
+        background-color: #f2f2f2;
+      }
+
+      tbody tr:nth-child(even) {
+        background-color: #ddd;
+      }
+
+      thead {
+        background-color: #007bff;
+        width: 100%;
+        color: white;
+      }
+
+      .get-all-id {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .row {
+        width: 100%;
+        border: 2px solid green;
+      }
+
+      .row td {
+        padding: 10px;
+      }
+
+      .row td:last-child {
+        width: 100%;
+      }
+
+      .row td:first-child {
+        padding-right: 1em;
+        text-align: right;
+      }
+
+      .secure-url {
+        width: 300px;
+        height: 100px;
+        overflow: auto;
+        word-wrap: break-word;
+        padding: 10px;
+        border: 2px solid #007bff;
+        margin-top: 20px;
+      }
     </style>
 
     <script>
       const uploadForm = document.getElementById("uploadForm");
       const messageDiv = document.getElementById("message");
       const uploadedImagesDiv = document.getElementById("uploadedImages");
+      const getIdButton = document.getElementById("getidbutton");
+      const imageIdsBody = document.getElementById("imageIdsBody");
+      const tableHead = document.getElementById("table-head");
+      const displayImageForm = document.getElementById("display-image");
+      const imageIdsTable = document.getElementById("imageIdsTable");
+      const secureUlr = document.querySelector(".secure-url");
+      const fetchMessage = document.querySelector(".fetch-message");
+
+      displayImageForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        fetchMessage.textContent = "Fetching your image... Please wait...";
+        const imageId = displayImageForm.querySelector("input").value;
+        const imageUrl = `/api/get_image/${imageId}`;
+
+        try {
+          const response = await fetch(imageUrl);
+          const data = await response.json();
+
+          if (response.ok) {
+            fetchMessage.textContent = "Image fetched successfully!";
+            fetchMessage.classList.add("success");
+            const img = document.createElement("img");
+            img.src = data.imageUrl;
+            img.alt = "uploaded image";
+            secureUlr.textContent = `Secure URL: ${data.imageUrl}`;
+            uploadedImagesDiv.innerHTML = "";
+            uploadedImagesDiv.appendChild(img);
+          } else {
+            throw new Error(data.error);
+          }
+        } catch (error) {
+          fetchMessage.classList.add("error");
+          fetchMessage.textContent = error.message;
+        }
+      });
+
+      getIdButton.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        imageIdsBody.innerHTML = "";
+
+        try {
+          const response = await fetch("/api/get_images");
+          const data = await response.json();
+
+          if (response.ok) {
+            imageIdsTable.style.display = "block";
+            tableHead.innerHTML = "<th>Serial Number</th><th>Image ID</th>";
+            data.imageIds.forEach((id, index) => {
+              const row = document.createElement("tr");
+              row.classList.add("row");
+
+              const serialNumberCell = document.createElement("td");
+              serialNumberCell.textContent = index + 1;
+              row.appendChild(serialNumberCell);
+
+              const idCell = document.createElement("td");
+              idCell.textContent = id;
+              row.appendChild(idCell);
+
+              imageIdsBody.appendChild(row);
+            });
+          } else {
+            throw new Error(data.error);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
 
       uploadForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        messageDiv.textContent = "";
+        messageDiv.textContent = "Uploading your image... Please wait...";
+        messageDiv.classList.remove("error");
 
         const file = document.getElementById("file");
 
-        // console.log(file.files[0])
         const formData = new FormData();
 
         formData.append("imagefile", file.files[0]);
@@ -95,79 +299,20 @@
             body: formData,
           });
 
-
           const data = await response.json();
-          console.log(data)
           if (response.ok) {
             messageDiv.textContent = data.message;
+            messageDiv.classList.add("success");
 
-            messageDiv.textContent += data.imageId
-
-            // fetchImageIds();
-
+            messageDiv.textContent += ` with database id number ${data.imageId}`;
           } else {
             throw new Error(data.error);
           }
         } catch (error) {
           messageDiv.textContent = error.message;
+          messageDiv.classList.add("error");
         }
       });
-
-//       async function fetchImageIds() {
-//     try {
-//         const response = await fetch("/api/image_ids");
-//         const data = await response.json();
-//         if (response.ok) {
-//             renderImageIds(data.imageIds);
-//         } else {
-//             throw new Error(data.error);
-//         }
-//     } catch (error) {
-//         // Check if response headers have already been sent
-//         if (!res.headersSent) {
-//             // Send error response only if headers have not been sent
-//             messageDiv.textContent = error.message;
-//         }
-//     }
-// }
-//         function renderImageIds(imageIds) {
-//             imageIdsTableBody.innerHTML = "";
-//             imageIds.forEach((id) => {
-//                 const row = document.createElement("tr");
-//                 const cell = document.createElement("td");
-//                 cell.textContent = id;
-//                 row.appendChild(cell);
-//                 imageIdsTableBody.appendChild(row);
-//             });
-//         }
-
-//         // Fetch image IDs when the page loads
-//         fetchImageIds();
-
-      // const displayUploadedImages = async () => {
-      //   uploadedImagesDiv.innerHTML = "";
-
-      //   try {
-      //     const response = await fetch("/api/get_image");
-      //     const data = await response.json();
-
-      //     if (response.ok) {
-      //       if (data.imageUrl) {
-      //         const img = document.createElement("img");
-      //         img.src = data.imageUrl;
-      //         uploadedImagesDiv.appendChild(img);
-      //       } else {
-      //         uploadedImagesDiv.textContent = "No images found";
-      //       }
-      //     } else {
-      //       throw new Error(data.error);
-      //     }
-      //   } catch (error) {
-      //     messageDiv.textContent = error.message;
-      //   }
-      // };
-
-      // displayUploadedImages();
     </script>
   </body>
 </html>
