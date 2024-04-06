@@ -53,8 +53,10 @@
           </form>
           <p class="fetch-image-message"></p>
           <br />
-          <div id="uploadedImages"></div>
-          <p class="secure-url"></p>
+          <div class="lower-right">
+            <div id="uploadedImages"></div>
+            <p class="secure-url"></p>
+          </div>
         </div>
       </div>
     </div>
@@ -209,6 +211,10 @@
         border: 2px solid #007bff;
         margin-top: 20px;
       }
+
+      .lower-right {
+        display: none;
+      }
     </style>
 
     <script>
@@ -223,6 +229,8 @@
       const secureUlr = document.querySelector(".secure-url");
       const fetchMessage = document.querySelector(".fetch-image-message");
       const fetchIdsMessage = document.querySelector(".fetch-ids-message");
+      const lowerRight = document.querySelector(".lower-right");
+
 
       const clearErrorMessage = () => {
         messageDiv.textContent = "";
@@ -238,7 +246,6 @@
         fetchIdsMessage.classList.remove("success");
       };
 
-      // Display error message
       const displayErrorMessage = (errorMessage) => {
         const messageDiv = document.getElementById("message");
         messageDiv.textContent = errorMessage;
@@ -250,13 +257,14 @@
         clearErrorMessage();
         fetchMessage.textContent = "Fetching your image... Please wait...";
         const imageId = displayImageForm.querySelector("input").value;
-        const imageUrl = `/api/get_image/${imageId}`;
+        const imageUrl = `/get_image/${imageId}`;
 
         try {
           const response = await fetch(imageUrl);
           const data = await response.json();
 
           if (response.ok) {
+            lowerRight.style.display = "block";
             fetchMessage.textContent = "Image fetched successfully!";
             fetchMessage.classList.add("success");
             const img = document.createElement("img");
@@ -269,6 +277,7 @@
             throw new Error(data.error);
           }
         } catch (error) {
+          console.error(error);
           fetchMessage.classList.add("error");
           fetchMessage.textContent = error.message;
         }
@@ -277,11 +286,12 @@
       getIdButton.addEventListener("submit", async (e) => {
         e.preventDefault();
         clearErrorMessage();
-        fetchIdsMessage.textContent = "Fetching all image ids... Please wait...";
+        fetchIdsMessage.textContent =
+          "Fetching all image ids... Please wait...";
         imageIdsBody.innerHTML = "";
 
         try {
-          const response = await fetch("/api/get_images");
+          const response = await fetch("/get_images");
           const data = await response.json();
 
           if (response.ok) {
@@ -323,6 +333,7 @@
 
         if (!file.files[0].type.startsWith("image")) {
           displayErrorMessage("Only image files are allowed");
+          file.value = "";
           return;
         }
 
@@ -331,7 +342,7 @@
         formData.append("imagefile", file.files[0]);
 
         try {
-          const response = await fetch("/api/upload", {
+          const response = await fetch("/upload", {
             method: "POST",
             body: formData,
           });
@@ -342,6 +353,8 @@
             messageDiv.classList.add("success");
 
             messageDiv.textContent += ` with database id number ${data.imageId}`;
+
+            file.value = "";
           } else {
             throw new Error(data.error);
           }

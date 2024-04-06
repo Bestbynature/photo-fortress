@@ -34,7 +34,7 @@ The Photo Fortress API does not require authentication for basic functionality. 
 
 ### Upload Image
 
-Endpoint: `POST /api/upload`
+Endpoint: `POST /upload`
 
 Description: Uploads an image to the server and saves it to the database.
 
@@ -52,7 +52,7 @@ Response:
 <a name="get-image"></a>
 ### Get an image by id
 
-Endpoint: `GET /api/get_image/:id`
+Endpoint: `GET /get_image/:id`
 
 Description: Retrieves an image with the given id from the server.
 
@@ -68,7 +68,7 @@ Response:
 <a name="get-images"></a>
 ### Get the ids of all the images in the database
 
-Endpoint: `GET /api/get_images`
+Endpoint: `GET /get_images`
 
 Description: Retrieves the ids of all the images in the database.
 
@@ -99,13 +99,13 @@ Rate limiting is not implemented in the current version of the API but may be in
 ### Uploading an Image
 
 ```bash
-curl -X POST -F "imagefile=@/path/to/image.jpg" http://localhost:3000/api/upload
+curl -X POST -F "imagefile=@/path/to/image.jpg" http://localhost:3000/upload
 ```
 
 ### Retrieving an Image
 
 ```bash
-curl http://localhost:3000/api/get_image/1234
+curl http://localhost:3000/get_image/1234
 ```
 
 <a name="versioning"></a>
