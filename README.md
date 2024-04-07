@@ -19,12 +19,7 @@
   - [📝 License ](#-license-)
 
 
- 
-
-https://github.com/Bestbynature/photo-fortress/assets/104390780/f0ea9f25-764c-44eb-badd-fb9801236391
-
-
-
+ <hr>
 
 <!-- PROJECT DESCRIPTION -->
 
@@ -75,7 +70,10 @@ The "Photo Fortress" GitHub repository is a secure image upload and retrieval ap
 
 ### Live Demo <a name="live-demo"></a>
 
-[Please check back for this](#)
+[Please check back for the hosted version](#). The video demonstration is given below:
+
+# [Photo_Fortress_App_Demonstration.mp4](https://drive.google.com/file/d/1LFj3T5j9kyXrdPIWlK3YrjBbdQF9Zdu6/view?usp=sharing)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
